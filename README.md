@@ -11,12 +11,12 @@ Construido con **React + Vite + TypeScript** y estilizado con **Tailwind CSS v4*
 ```bash
 git clone https://github.com/tu-usuario/olt-dashboard-frontend.git
 cd olt-dashboard-frontend
-
+```
 ### 2. Instalar dependencias
 Usando pnpm
 ```bash
 pnpm install
-
+```
 ### 3. Ejecutar modo desarrollador
 ```bash
 pnpm dev
@@ -24,6 +24,7 @@ pnpm dev
 ## La aplicación estará disponible en
 ```bash
 http://localhost:5173
+```
 
 ## 📂 Estructura del proyecto.
 
@@ -82,6 +83,7 @@ Request:
 
 ```Http
 GET /api/olts
+```
 
 Response:
 
@@ -99,6 +101,7 @@ Response:
     "ip": "10.2.166.151"
   }
 ]	
+```
 
 ### 2. Obtener Puertos de un OLT
 
@@ -106,6 +109,7 @@ Request:
 
 ```Http
 GET /api/olts/1/ports
+```
 
 Response:
 
@@ -125,7 +129,7 @@ Response:
     "label": "1"
   }
 ]
-
+```
 ### 3. Crear un OLT nuevo
 
 Request:
@@ -138,6 +142,7 @@ Content-Type: application/json
   "name": "GRN-OLT3",
   "ip": "10.2.166.152"
 }
+```
 
 Response:
 
@@ -147,6 +152,7 @@ Response:
   "name": "GRN-OLT3",
   "ip": "10.2.166.152"
 }
+```
 
 ### 4. Actualizar una OLT existente
 
@@ -160,6 +166,7 @@ Content-Type: application/json
   "name": "GRN-OLT1-Updated",
   "ip": "10.2.166.160"
 }
+```
 
 Response:
 
@@ -170,8 +177,45 @@ Response:
   "name": "GRN-OLT1-Updated",
   "ip": "10.2.166.160"
 }
+```
 
 ### 5. Cargar puertos para una OLT
+
+Request:
+
+```Http
+POST /api/olts/1/ports
+Content-Type: application/json
+
+[
+  { "slot": 1, "portNumber": 1, "label": "1" },
+  { "slot": 2, "portNumber": 1, "label": "1" },
+  { "slot": 1, "portNumber": 2, "label": "2" }
+]
+```
+
+Response:
+
+```Json
+{
+  "message": "Puertos cargados correctamente",
+  "count": 3
+}
+```
+
+## 📖 Próximos pasos
+- Conectar el formulario de DashboardEdicion.tsx al backend (POST y PUT).
+- Validar campos (nombre, IP, archivo).
+- Agregar feedback visual (mensajes de éxito/error).
+- Documentar modelos de datos (Olt, Port) y ejemplos de payloads JSON.
+- Incluir capturas de pantalla en este README.
+
+## 👨🏻‍💻 Tecnologías utilizadas 
+- React
+- Vite
+- TypeScript
+- Tailwind CSS V4
+- pnpm
 
 
 

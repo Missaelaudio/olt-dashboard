@@ -61,11 +61,6 @@ export default function PortMatrix({ oltId }: { oltId: number }) {
                   className={`px-2 py-1 text-center border ${
                     c === 8 || c === 9 ? 'bg-gray-100' : 'bg-white'
                   }`}
-                  title={
-                    port
-                      ? `Slot ${port.slot} | Puerto ${port.portNumber} | Label: ${port.label || 'N/A'}`
-                      : ''
-                  }
                 >
                   {port ? (
                     <span

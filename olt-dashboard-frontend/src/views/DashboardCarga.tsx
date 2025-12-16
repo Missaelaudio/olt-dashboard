@@ -74,6 +74,25 @@ const DashboardCarga: React.FC = () => {
     }
   };
 
+// Utilidades para render de errores AGREGADO A VERSION ESTABLE 16/12/2025 ELIMINAR SI NO SE USA
+  const safeText = (text?: string | number) => {
+    const str = String(text ?? '').trim();
+    return str.length > 0 ? str : '—';
+  };
+
+  const isEmpty = (text?: string | number) => {
+    return String(text ?? '').trim().length === 0;
+  };
+
+  const errorSummaryByField = (errors: ErrorDetail[]) => {
+    const map = new Map<string, number>();
+    errors.forEach(e => {
+      const key = e.field?.trim() || 'desconocido';
+      map.set(key, (map.get(key) || 0) + 1);
+    });
+    return Array.from(map.entries()).map(([field, count]) => ({ field, count }));
+  };
+
   return (
     <div className="space-y-6">
       <h2 className="text-xl font-semibold text-gray-800">Carga de nueva información</h2>
@@ -102,17 +121,68 @@ const DashboardCarga: React.FC = () => {
           <p className="text-sm text-gray-700">
             Mappings insertados: {result.insertedMappings}
           </p>
-
-          {result.errors.length > 0 && (
-            <div className="mt-4 bg-red-50 border border-red-200 rounded-md p-4">
-              <h3 className="text-md font-semibold text-red-600 mb-2">Errores encontrados:</h3>
-              <ul className="list-disc list-inside text-sm text-red-800 space-y-1">
-                {result.errors.map((err, idx) => (
-                  <li key={idx}>
-                    Fila {err.row}: OLT {err.olt}, Slot {err.slot}: {err.field} inválido. Contiene: "{err.value}", se espera: "{err.expected}"
-                  </li>
+          
+          {/* Resumen por campo agregado en 16/12/2025 eliminar si presenta error*/}
+          {result.errors?.length > 0 && (
+            <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3">
+              <h3 className="text-sm font-semibold text-yellow-800 mb-2">Resumen de errores por campo</h3>
+              <div className="flex flex-wrap gap-2 text-xs">
+                {errorSummaryByField(result.errors).map(item => (
+                  <span
+                    key={item.field}
+                    className="inline-flex items-center px-2 py-1 bg-yellow-100 text-yellow-800 rounded"
+                  >
+                    {item.field}: {item.count}
+                  </span>
                 ))}
-              </ul>
+              </div>
+            </div>
+          )}
+
+            {/* Detalle de errores agregado en 16/12/2025 eliminar si presenta errores*/}
+          {result.errors?.length > 0 && (
+            <div className="mt-2 bg-red-50 border border-red-200 rounded-md p-4">
+              <h3 className="text-md font-semibold text-red-600 mb-3">Errores encontrados</h3>
+
+              <div className="overflow-x-auto">
+                <table className="min-w-full text-sm border border-red-200">
+                  <thead>
+                    <tr className="bg-red-100 text-red-800">
+                      <th className="px-3 py-2 border">Fila</th>
+                      <th className="px-3 py-2 border">OLT</th>
+                      <th className="px-3 py-2 border">Slot</th>
+                      <th className="px-3 py-2 border">Campo</th>
+                      <th className="px-3 py-2 border">Valor recibido</th>
+                      <th className="px-3 py-2 border">Valor esperado</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {result.errors.map((err, idx) => (
+                      <tr key={idx} className="bg-white">
+                        <td className="px-3 py-2 border text-gray-800">{safeText(err.row)}</td>
+                        <td className="px-3 py-2 border text-gray-800">{safeText(err.olt)}</td>
+                        <td className="px-3 py-2 border text-gray-800">{safeText(err.slot)}</td>
+                        <td className="px-3 py-2 border font-medium text-red-700">
+                          {safeText(err.field)}
+                        </td>
+                        <td
+                          className={`px-3 py-2 border ${
+                            isEmpty(err.value) ? 'bg-red-50 text-red-700 italic' : 'text-gray-800'
+                          }`}
+                        >
+                          {safeText(err.value)}
+                        </td>
+                        <td className="px-3 py-2 border text-gray-800">{safeText(err.expected)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Nota útil */}
+              <p className="mt-3 text-xs text-red-700">
+                Tip: Si “Valor recibido” aparece vacío (—), revisa encabezados del Excel y tipos (número vs texto).
+              </p>
             </div>
           )}
         </div>

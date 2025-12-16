@@ -1,0 +1,14 @@
+{result.errors.length > 0 && (
+            <div className="mt-4 bg-red-50 border border-red-200 rounded-md p-4">
+              <h3 className="text-md font-semibold text-red-600 mb-2">Errores encontrados:</h3>
+              <ul className="list-disc list-inside text-sm text-red-800 space-y-1">
+                {result.errors.map((err, idx) => (
+                  <li key={idx}>
+                    Fila {err.row}: OLT {err.olt}, Slot {err.slot}: {err.field} inválido. Contiene: "{err.value}", se espera: "{err.expected}"
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}

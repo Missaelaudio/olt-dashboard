@@ -1,0 +1,95 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Olt {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  createdAt DateTime  @default(now())
+  ports     Port[]
+  mappings  Mapping[]
+}
+
+model Port {
+  id         Int       @id @default(autoincrement())
+  oltId      Int
+  slot       Int
+  portNumber Int
+  status     String    @default("available")
+  label      String?
+  brand      String?
+  olt        Olt       @relation(fields: [oltId], references: [id])
+  mappings   Mapping[]
+
+  @@unique([oltId, slot, portNumber])
+}
+
+model Edfa {
+  id       Int       @id @default(autoincrement())
+  name     String    @unique
+  mappings Mapping[]
+}
+
+model Chasis {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  divisores Divisor[]
+  mappings  Mapping[]
+}
+
+model Divisor {
+  id       Int    @id @default(autoincrement())
+  chasisId Int
+  slot     Int
+  type     String?
+  chasis   Chasis  @relation(fields: [chasisId], references: [id])
+  mappings Mapping[]
+
+  @@unique([chasisId, slot])
+}
+
+model Odf {
+  id        Int       @id @default(autoincrement())
+  name      String?
+  odfNumber Int       @unique
+  ports     OdfPort[]
+}
+
+model OdfPort {
+  id       Int       @id @default(autoincrement())
+  odfId    Int
+  number   Int?
+  buffer   Int
+  color    String
+  odf      Odf       @relation(fields: [odfId], references: [id])
+  mappings Mapping[]
+
+  @@unique([odfId, buffer, color])
+}
+
+model Mapping {
+  id             Int    @id @default(autoincrement())
+  oltId          Int
+  portId         Int
+  odfPortId      Int
+  edfaId         Int?
+  chasisId       Int?
+  divisorId      Int?
+  edfaComPort    String?
+  edfaPonPort    String?
+  splitterOutput String?
+  entrada        String?
+  feeder         String?
+
+  olt     Olt     @relation(fields: [oltId], references: [id])
+  port    Port    @relation(fields: [portId], references: [id])
+  odfPort OdfPort @relation(fields: [odfPortId], references: [id])
+  edfa    Edfa?   @relation(fields: [edfaId], references: [id])
+  chasis  Chasis? @relation(fields: [chasisId], references: [id])
+  divisor Divisor? @relation(fields: [divisorId], references: [id])
+}

@@ -49,12 +49,12 @@ export function AppSidebar({ activeTab, onTabChange }: AppSidebarProps) {
   return (
     <Sidebar
       collapsible="icon"
-      className="border-r border-black/5 bg-brand-purple text-white w-56 sm:w-64 md:w-[17.5rem] z-30 transition-all duration-300 ease-in-out"
+      className="border-r border-black/5 dark:border-slate-800 bg-brand-purple dark:bg-slate-950 text-white w-56 sm:w-64 md:w-[17.5rem] z-30 transition-all duration-300 ease-in-out"
     >
       {/* Header — Responsive & Collapsible Safe */}
-      <SidebarHeader className="h-16 md:h-[4.5rem] flex flex-col justify-center border-b border-white/5 bg-brand-purple p-0 overflow-hidden relative shrink-0">
+      <SidebarHeader className="h-16 md:h-[4.5rem] flex flex-col justify-center border-b border-white/5 dark:border-slate-800 bg-brand-purple dark:bg-slate-950 p-0 overflow-hidden relative shrink-0 transition-colors duration-300">
         <div className="flex items-center w-full px-4 group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:justify-center transition-all duration-300">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10 text-brand-green transition-all duration-300 ring-1 ring-white/10 shadow-inner group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:w-8 group-data-[collapsible=icon]:rounded-lg">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10 dark:bg-brand-purple/20 text-brand-green transition-all duration-300 ring-1 ring-white/10 dark:ring-brand-purple/30 shadow-inner group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:w-8 group-data-[collapsible=icon]:rounded-lg">
             <Layers className="h-5 w-5 md:h-6 md:w-6 transition-all duration-300 group-data-[collapsible=icon]:h-5 group-data-[collapsible=icon]:w-5" />
           </div>
           <div className="ml-3.5 flex flex-col overflow-hidden transition-all duration-300 group-data-[collapsible=icon]:w-0 group-data-[collapsible=icon]:ml-0 group-data-[collapsible=icon]:opacity-0">
@@ -66,9 +66,9 @@ export function AppSidebar({ activeTab, onTabChange }: AppSidebarProps) {
       </SidebarHeader>
 
       {/* Content — Responsive Navigation */}
-      <SidebarContent className="px-3 py-6 overflow-hidden bg-brand-purple/95 group-data-[collapsible=icon]:px-2">
+      <SidebarContent className="px-3 py-6 overflow-hidden bg-brand-purple/95 dark:bg-slate-950/95 group-data-[collapsible=icon]:px-2 transition-colors duration-300">
         <SidebarGroup className="p-0 space-y-2">
-          <SidebarGroupLabel className="text-white/20 px-4 text-[0.625rem] font-medium uppercase tracking-[0.2em] mb-4 group-data-[collapsible=icon]:hidden animate-in fade-in slide-in-from-left-2">
+          <SidebarGroupLabel className="text-white/30 dark:text-slate-400 px-4 text-[0.625rem] font-medium uppercase tracking-[0.2em] mb-4 group-data-[collapsible=icon]:hidden animate-in fade-in slide-in-from-left-2">
             Operaciones del Centro
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -88,8 +88,8 @@ export function AppSidebar({ activeTab, onTabChange }: AppSidebarProps) {
                       group-data-[collapsible=icon]:min-h-[2.5rem] group-data-[collapsible=icon]:h-[2.5rem] group-data-[collapsible=icon]:w-[2.5rem] group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:py-0
                       ${
                         activeTab === item.tab
-                          ? "bg-white/10 text-white shadow-md shadow-black/5"
-                          : "text-white/40 hover:bg-white/5 hover:text-white"
+                          ? "bg-white/10 dark:bg-brand-purple/20 text-white shadow-md shadow-black/5 dark:shadow-brand-purple/20"
+                          : "text-white/40 dark:text-slate-400 hover:bg-white/5 dark:hover:bg-slate-900/50 hover:text-white dark:hover:text-slate-200"
                       }
                     `}
                   >
@@ -97,7 +97,7 @@ export function AppSidebar({ activeTab, onTabChange }: AppSidebarProps) {
                       <div
                         className={`
                         flex items-center justify-center rounded-lg transition-all duration-300 shrink-0 group-data-[collapsible=icon]:scale-90
-                        ${activeTab === item.tab ? "text-white" : "text-white/50 group-hover/item:text-white"}
+                        ${activeTab === item.tab ? "text-white" : "text-white/50 dark:text-slate-400 group-hover/item:text-white dark:group-hover/item:text-slate-200"}
                       `}
                       >
                         <item.icon className="h-5 w-5 md:h-[1.375rem] md:w-[1.375rem]" />
@@ -107,13 +107,13 @@ export function AppSidebar({ activeTab, onTabChange }: AppSidebarProps) {
                         <span className="font-semibold text-[0.8125rem] tracking-tight whitespace-nowrap leading-none">
                           {item.title}
                         </span>
-                        <span className="text-[0.563rem] opacity-40 font-light uppercase tracking-wider truncate leading-none">
+                        <span className="text-[0.563rem] opacity-40 dark:opacity-50 font-light uppercase tracking-wider truncate leading-none">
                           {item.description}
                         </span>
                       </div>
 
                       {activeTab === item.tab && (
-                        <ChevronRight className="ml-auto h-3 w-3 text-white/30 animate-in fade-in slide-in-from-left-2 group-data-[collapsible=icon]:hidden" />
+                        <ChevronRight className="ml-auto h-3 w-3 text-white/30 dark:text-slate-500 animate-in fade-in slide-in-from-left-2 group-data-[collapsible=icon]:hidden" />
                       )}
                     </div>
                   </SidebarMenuButton>
@@ -125,19 +125,19 @@ export function AppSidebar({ activeTab, onTabChange }: AppSidebarProps) {
       </SidebarContent>
 
       {/* Footer — Responsive Profile */}
-      <div className="mt-auto border-t border-white/5 p-4 bg-brand-purple/95 group-data-[collapsible=icon]:p-2 group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:justify-center">
-        <div className="flex items-center w-full bg-white/5 p-2.5 rounded-[1.25rem] transition-all duration-300 border border-white/5 group-hover:border-white/10 group-data-[collapsible=icon]:w-auto group-data-[collapsible=icon]:p-1.5 group-data-[collapsible=icon]:rounded-xl group-data-[collapsible=icon]:border-0 group-data-[collapsible=icon]:bg-transparent">
-          <div className="relative shrink-0">
-            <div className="h-9 w-9 md:h-10 md:w-10 rounded-full bg-brand-green flex items-center justify-center text-white text-[0.75rem] font-semibold border-2 border-brand-purple shadow-sm">
-              LH
+      <div className="mt-auto border-t border-white/5 dark:border-slate-800 p-4 bg-brand-purple/95 dark:bg-slate-950/95 group-data-[collapsible=icon]:p-2 group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:justify-center transition-colors duration-300">
+        <div className="flex items-center w-full bg-white/5 dark:bg-slate-900/50 p-2.5 rounded-[1.25rem] transition-all duration-300 border border-white/5 dark:border-slate-800 group-hover:border-white/10 dark:group-hover:border-slate-700 group-data-[collapsible=icon]:w-auto group-data-[collapsible=icon]:p-1.5 group-data-[collapsible=icon]:rounded-xl group-data-[collapsible=icon]:border-0 group-data-[collapsible=icon]:bg-transparent">
+          <div className="relative shrink-0 flex items-center justify-center">
+            <div className="h-9 w-9 md:h-10 md:w-10 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center text-brand-purple dark:text-white text-xs md:text-sm font-bold border-2 border-brand-purple shadow-sm transition-colors">
+              AD
             </div>
-            <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 md:w-3 md:h-3 bg-brand-green rounded-full border-2 border-brand-purple"></div>
+            <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 md:w-3 md:h-3 bg-brand-green rounded-full border-2 border-brand-purple dark:border-slate-900"></div>
           </div>
           <div className="ml-3 flex flex-col overflow-hidden transition-all duration-300 group-data-[collapsible=icon]:w-0 group-data-[collapsible=icon]:ml-0 group-data-[collapsible=icon]:hidden">
-            <span className="text-[0.8125rem] font-semibold text-white truncate leading-none mb-1">
+            <span className="text-[0.8125rem] font-semibold text-white dark:text-slate-200 truncate leading-none mb-1">
               Administrador
             </span>
-            <span className="text-[0.65rem] text-white/50 font-medium truncate leading-none">
+            <span className="text-[0.65rem] text-white/50 dark:text-slate-400 font-medium truncate leading-none transition-colors">
               admin@lumenhive.net
             </span>
           </div>

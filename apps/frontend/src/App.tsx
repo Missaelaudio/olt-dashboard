@@ -5,7 +5,20 @@ import TopologyDashboard from "@/features/topology/pages/TopologyDashboard";
 import EditOltPage from "@/features/inventory/pages/EditOltPage";
 import MappingDashboard from "@/features/mapping/pages/MappingDashboard";
 
+import ProfilePage from "@/features/profile/pages/ProfilePage";
+import SettingsPage from "@/features/settings/pages/SettingsPage";
+
 const App = () => {
+  // Initialize dark mode class on first mount
+  React.useEffect(() => {
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, []); // Empty dependency array - runs only once on mount
+
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     return localStorage.getItem("lumenhive_auth") === "true";
   });
@@ -34,6 +47,8 @@ const App = () => {
       {activeTab === "Consultar" && <TopologyDashboard />}
       {activeTab === "Editar" && <EditOltPage />}
       {activeTab === "Cargar" && <MappingDashboard />}
+      {activeTab === "Profile" && <ProfilePage />}
+      {activeTab === "Settings" && <SettingsPage />}
     </MainLayout>
   );
 };

@@ -67,6 +67,16 @@ body {
   line-height: 1.5;
 }
 
+::selection {
+  background-color: rgba(56, 189, 248, 0.3);
+  text-shadow: none;
+}
+
+::-moz-selection {
+  background-color: rgba(56, 189, 248, 0.3);
+  text-shadow: none;
+}
+
 h1,
 h2,
 h3,
@@ -139,8 +149,17 @@ h6 {
   padding: var(--space-lg);
 }
 
+.dark .enterprise-card {
+  background: #0f172a; /* slate-900 */
+  border-color: #1e293b; /* slate-800 */
+}
+
 .enterprise-card:hover {
   border-color: #cbd5e1;
+}
+
+.dark .enterprise-card:hover {
+  border-color: #334155; /* slate-700 */
 }
 
 @media (max-width: 768px) {

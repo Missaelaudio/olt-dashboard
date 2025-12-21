@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LumenHive</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.cdnfonts.com/css/helvetica-neue-9" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                purple: '#211c52',
+                purpleDark: '#6150e1',
+                green: '#2ED47A',
+                dark: '#00A86B',
+                light: '#f0effc',
+                blue: '#5E72E4',
+              },
+              neutral: {
+                dark: '#1A1C21',
+                medium: '#6B7280',
+                light: '#F8F9FD',
+                border: '#E5E7EB',
+              },
+              status: {
+                error: '#FF6B6B',
+                warning: '#FF9F43',
+                highlight: '#FFD166',
+              }
+            },
+            fontFamily: {
+              sans: ['"Source Sans 3"', '"Source Sans Pro"', 'sans-serif'],
+              heading: ['"Helvetica Neue"', 'Helvetica', 'Arial', 'sans-serif'],
+            },
+          }
+        }
+      }
+    </script>
+    <style type="text/css">
+      body {
+        font-family: "Source Sans 3", "Source Sans Pro", sans-serif !important;
+      }
+      h1, h2, h3, h4, h5, h6, .font-heading {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

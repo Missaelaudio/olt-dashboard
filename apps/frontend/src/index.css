@@ -1,0 +1,224 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Source+Sans+3:wght@200;300;400;500;600;700;800;900&display=swap");
+
+:root {
+  /* Ultra-Premium Corporate Palette */
+  --brand-navy: #161824;
+  --brand-purple: #7c3aed;
+  --brand-green: #22c55e;
+  --brand-blue: #3b82f6;
+
+  /* Surface & Borders */
+  --surface-100: #f8fafc;
+  --surface-200: #ffffff;
+  --border-subtle: #e2e8f0;
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+
+  /* Responsive Border Radius usando rem */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+
+  /* Responsive Spacing System */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 2.5rem;
+  --space-3xl: 3rem;
+}
+
+html {
+  font-size: 16px;
+}
+
+/* Responsive base font size */
+@media (max-width: 1024px) {
+  html {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 768px) {
+  html {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  html {
+    font-size: 13px;
+  }
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background-color: var(--surface-100);
+  color: var(--text-main);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+
+h1 {
+  font-size: 2rem;
+}
+h2 {
+  font-size: 1.75rem;
+}
+h3 {
+  font-size: 1.5rem;
+}
+h4 {
+  font-size: 1.25rem;
+}
+h5 {
+  font-size: 1.125rem;
+}
+h6 {
+  font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+  h1 {
+    font-size: 1.75rem;
+  }
+  h2 {
+    font-size: 1.5rem;
+  }
+  h3 {
+    font-size: 1.25rem;
+  }
+}
+
+/* Sidebar Transitions — Responsive */
+[data-sidebar="sidebar"] {
+  transition:
+    width 0.3s ease-in-out,
+    transform 0.3s ease-in-out !important;
+  box-shadow: none !important;
+  border-right: 0.0625rem solid rgba(0, 0, 0, 0.05) !important;
+  overflow: hidden !important;
+}
+
+[data-sidebar="sidebar"] .transition-all {
+  transition-duration: 200ms !important;
+}
+
+/* Glassmorphism & Surface Utilities */
+.glass-surface {
+  background: rgba(255, 255, 255, 0.7);
+  -webkit-backdrop-filter: blur(0.75rem);
+  backdrop-filter: blur(0.75rem);
+}
+
+/* Enterprise Flat Card System - Responsive */
+.enterprise-card {
+  background: var(--surface-200);
+  border: 0.0625rem solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: var(--space-lg);
+}
+
+.enterprise-card:hover {
+  border-color: #cbd5e1;
+}
+
+@media (max-width: 768px) {
+  .enterprise-card {
+    padding: var(--space-md);
+    border-radius: var(--radius-sm);
+  }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  display: none;
+}
+
+* {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Custom Micro-animations */
+@keyframes soft-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-soft-pulse {
+  animation: soft-pulse 3s infinite ease-in-out;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Responsive Container Utilities */
+.container-responsive {
+  width: 100%;
+  max-width: 100%;
+  padding-left: var(--space-md);
+  padding-right: var(--space-md);
+}
+
+@media (min-width: 640px) {
+  .container-responsive {
+    max-width: 40rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .container-responsive {
+    max-width: 48rem;
+    padding-left: var(--space-lg);
+    padding-right: var(--space-lg);
+  }
+}
+
+@media (min-width: 1024px) {
+  .container-responsive {
+    max-width: 64rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .container-responsive {
+    max-width: 80rem;
+  }
+}

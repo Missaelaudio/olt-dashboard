@@ -8,7 +8,12 @@ interface Port {
   status?: string; // opcional si backend lo devuelve
 }
 
-export default function PortMatrix({ oltId }: { oltId: number }) {
+interface PortMatrixProps {
+  oltId: number;
+  onPortClick?: (slot: number, port: number) => void;
+}
+
+export default function PortMatrix({ oltId, onPortClick }: PortMatrixProps) {
   const [ports, setPorts] = useState<Port[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -60,7 +65,8 @@ export default function PortMatrix({ oltId }: { oltId: number }) {
                   key={c}
                   className={`px-2 py-1 text-center border ${
                     c === 8 || c === 9 ? 'bg-gray-100' : 'bg-white'
-                  }`}
+                  } ${onPortClick ? 'cursor-pointer hover:bg-blue-100' : ''}`}
+                  onClick={() => onPortClick?.(c + 1, r + 1)}
                 >
                   {port ? (
                     <span

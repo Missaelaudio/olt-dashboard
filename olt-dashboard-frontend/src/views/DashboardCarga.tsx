@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface ErrorDetail {
   row: number;
-  olt: number;
-  slot: number;
+  olt: string | number;
+  slot: string | number;
   field: string;
   value: string;
   expected: string;
@@ -12,6 +12,9 @@ interface ErrorDetail {
 const DashboardCarga: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+  const [sheets, setSheets] = useState<string[]>([]);
+  const [selectedSheet, setSelectedSheet] = useState<string>('');
+  const [replaceData, setReplaceData] = useState(true); // Controla si se reemplazan los datos existentes
   const [result, setResult] = useState<{
     message: string;
     insertedMappings: number;
@@ -27,10 +30,72 @@ const DashboardCarga: React.FC = () => {
     hilo: '',
   });
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setFile(e.target.files[0]);
+  const [olts, setOlts] = useState<{ id: number; name: string }[]>([]);
+
+  const fetchOlts = async () => {
+    try {
+      const res = await fetch('http://localhost:4000/api/olts');
+      if (res.ok) {
+        const data = await res.json();
+        setOlts(data);
+      }
+    } catch (err) {
+      console.error('Error cargando OLTs:', err);
     }
+  };
+
+  useEffect(() => {
+    fetchOlts();
+  }, []);
+
+  const handleDeleteOlt = async (id: number) => {
+    if (!confirm('¿Estás seguro de eliminar esta OLT y toda su información asociada?')) return;
+    try {
+      const res = await fetch(`http://localhost:4000/api/olts/${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        alert('OLT eliminada correctamente');
+        fetchOlts();
+      } else {
+        alert('Error al eliminar la OLT');
+      }
+    } catch (err) {
+      console.error('Error eliminando OLT:', err);
+      alert('Error al eliminar la OLT');
+    }
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const selectedFile = e.target.files[0];
+      setFile(selectedFile);
+      setResult(null);
+      setSheets([]);
+      
+      // Previsualizar hojas
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+      
+      try {
+        const res = await fetch('http://localhost:4000/api/mappings/sheets', {
+          method: 'POST',
+          body: formData,
+        });
+        const data = await res.json();
+        if (data.sheets && Array.isArray(data.sheets)) {
+          setSheets(data.sheets);
+          setSelectedSheet(data.sheets[0]); // Seleccionar la primera por defecto
+        }
+      } catch (err) {
+        console.error('Error obteniendo hojas:', err);
+      }
+    }
+  };
+
+  const handleReset = () => {
+    setFile(null);
+    setResult(null);
+    setSheets([]);
+    // Resetear el input file visualmente es difícil sin una ref, pero esto limpia el estado interno
   };
 
   const handleUpload = async (e: React.FormEvent) => {
@@ -38,18 +103,30 @@ const DashboardCarga: React.FC = () => {
     if (!file) return;
 
     const formData = new FormData();
+    // Es recomendable añadir los campos de texto antes del archivo
+    if (selectedSheet) {
+      formData.append('sheetName', selectedSheet);
+    }
     formData.append('file', file);
 
     setLoading(true);
     setResult(null);
 
     try {
-      const res = await fetch('http://localhost:4000/api/mappings/upload?replace=true', {
+      const url = new URL('http://localhost:4000/api/mappings/upload');
+      if (replaceData) {
+        url.searchParams.append('replace', 'true');
+      }
+
+      const res = await fetch(url.toString(), {
         method: 'POST',
         body: formData,
       });
       const data = await res.json();
       setResult(data);
+      if (res.ok) {
+        fetchOlts();
+      }
     } catch (err) {
       console.error('Error en la carga:', err);
       setResult({ message: 'Error en la carga', insertedMappings: 0, errors: [] });
@@ -99,19 +176,63 @@ const DashboardCarga: React.FC = () => {
 
       {/* Subida de archivo */}
       <form onSubmit={handleUpload} className="space-y-4">
-        <input
-          type="file"
-          accept=".xlsx,.xls"
-          onChange={handleFileChange}
-          className="block w-full text-sm text-gray-700"
-        />
-        <button
-          type="submit"
-          disabled={!file || loading}
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-400 transition-colors"
-        >
-          {loading ? 'Subiendo...' : 'Subir Excel'}
-        </button>
+        <div className="flex items-center gap-4">
+          <input
+            type="file"
+            accept=".xlsx,.xls"
+            onChange={handleFileChange}
+            className="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+          />
+          {result && (
+            <button
+              type="button"
+              onClick={handleReset}
+              className="px-3 py-2 text-sm text-gray-600 hover:text-gray-800 underline"
+            >
+              Limpiar
+            </button>
+          )}
+        </div>
+        
+        {/* Selector de Hojas (OLTs) */}
+        {sheets.length > 0 && (
+          <div className="w-full max-w-md">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Seleccionar OLT (Hoja de Excel):</label>
+            <select
+              value={selectedSheet}
+              onChange={(e) => setSelectedSheet(e.target.value)}
+              className="block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            >
+              {sheets.map((sheet) => (
+                <option key={sheet} value={sheet}>{sheet}</option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        {/* Checkbox para reemplazar datos */}
+        <div className="flex items-center my-4">
+          <input
+            id="replace-data-checkbox"
+            type="checkbox"
+            checked={replaceData}
+            onChange={(e) => setReplaceData(e.target.checked)}
+            className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+          />
+          <label htmlFor="replace-data-checkbox" className="ml-2 block text-sm text-gray-900">
+            Reemplazar datos existentes para la OLT seleccionada
+          </label>
+        </div>
+
+        <div className="flex justify-start">
+          <button
+            type="submit"
+            disabled={!file || loading}
+            className="px-6 py-2 bg-blue-600 text-white rounded shadow hover:bg-blue-700 disabled:bg-gray-400 transition-colors font-medium"
+          >
+            {loading ? 'Procesando...' : 'Cargar Archivo'}
+          </button>
+        </div>
       </form>
 
       {/* Resultado */}
@@ -216,6 +337,45 @@ const DashboardCarga: React.FC = () => {
             </button>
           </div>
         </form>
+      </div>
+
+      {/* Gestión de OLTs */}
+      <div className="mt-10 border-t pt-6">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4">Gestión de OLTs Existentes</h3>
+        <div className="overflow-x-auto bg-white border border-gray-200 rounded-md shadow-sm">
+          <table className="min-w-full text-sm">
+            <thead className="bg-gray-50 border-b border-gray-200">
+              <tr>
+                <th className="px-4 py-3 text-left font-medium text-gray-700">ID</th>
+                <th className="px-4 py-3 text-left font-medium text-gray-700">Nombre</th>
+                <th className="px-4 py-3 text-center font-medium text-gray-700">Acciones</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {olts.map((olt) => (
+                <tr key={olt.id} className="hover:bg-gray-50">
+                  <td className="px-4 py-3 text-gray-900">{olt.id}</td>
+                  <td className="px-4 py-3 text-gray-900">{olt.name}</td>
+                  <td className="px-4 py-3 text-center">
+                    <button
+                      onClick={() => handleDeleteOlt(olt.id)}
+                      className="text-red-600 hover:text-red-800 font-medium hover:underline"
+                    >
+                      Eliminar
+                    </button>
+                  </td>
+                </tr>
+              ))}
+              {olts.length === 0 && (
+                <tr>
+                  <td colSpan={3} className="px-4 py-6 text-center text-gray-500 italic">
+                    No hay OLTs registradas en el sistema.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

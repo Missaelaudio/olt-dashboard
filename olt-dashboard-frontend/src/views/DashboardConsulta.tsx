@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PortMatrix from '../components/PortMatrix';
+import PortDetailsModal from '../components/PortDetailsModal';
+
 
 interface Olt {
   id: number;
@@ -24,6 +26,7 @@ const DashboardConsulta: React.FC = () => {
   const [selectedOlt, setSelectedOlt] = useState<number | null>(null);
   const [ports, setPorts] = useState<Port[]>([]);
   const [loading, setLoading] = useState(false);
+  const [selectedPortData, setSelectedPortData] = useState<{ slot: number; port: number } | null>(null);
 
   // Cargar lista de OLTs al montar
   useEffect(() => {
@@ -84,8 +87,20 @@ const DashboardConsulta: React.FC = () => {
       {/* Matriz de puertos */}
       {!loading && ports.length > 0 && selectedOlt !== null && (
         <div className="mt-6">
-          <PortMatrix oltId={selectedOlt} />
+          <PortMatrix 
+            oltId={selectedOlt} 
+            onPortClick={(slot: number, port: number) => setSelectedPortData({ slot, port })}
+          />
         </div>
+      )}
+
+      {selectedPortData && selectedOlt !== null && (
+        <PortDetailsModal
+          oltId={selectedOlt}
+          slot={selectedPortData.slot}
+          portNumber={selectedPortData.port}
+          onClose={() => setSelectedPortData(null)}
+        />
       )}
     </div>
   );

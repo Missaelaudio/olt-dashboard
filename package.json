@@ -1,12 +1,15 @@
 {
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@types/body-parser": "^1.19.6",
     "@types/cors": "^2.8.19",
     "@types/dotenv": "^8.2.3",
     "@types/express": "^5.0.5",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/multer": "^2.0.0",
     "@types/node": "^24.10.4",
     "@types/supertest": "^6.0.3",
+    "concurrently": "^9.2.1",
     "nodemon": "^3.1.11",
     "prisma": "6.2.1",
     "supertest": "^7.1.4",
@@ -16,16 +19,21 @@
   },
   "dependencies": {
     "@prisma/client": "6.2.1",
+    "bcryptjs": "^3.0.3",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "express-rate-limit": "^8.2.1",
+    "firebase": "^12.10.0",
     "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.3",
     "multer": "^2.0.2",
     "xlsx": "^0.18.5"
   },
   "scripts": {
-    "dev": "nodemon --watch src --exec ts-node src/server.ts",
+    "dev:backend": "nodemon --watch src --exec ts-node src/server.ts",
+    "dev:frontend": "pnpm -C olt-dashboard-frontend dev",
+    "dev": "concurrently \"pnpm dev:backend\" \"pnpm dev:frontend\"",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:seed": "prisma db seed",

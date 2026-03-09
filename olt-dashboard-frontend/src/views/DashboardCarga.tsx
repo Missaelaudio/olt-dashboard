@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { apiFetch } from '../utils/api';
 
 interface ErrorDetail {
   row: number;
@@ -28,13 +29,21 @@ const DashboardCarga: React.FC = () => {
     odf: '',
     buffer: '',
     hilo: '',
+    edfa: '',
+    edfaPon: '',
+    edfaCom: '',
+    chasis: '',
+    posicion: '',
+    splitterOutput: '',
+    entrada: '',
+    feeder: '',
   });
 
   const [olts, setOlts] = useState<{ id: number; name: string }[]>([]);
 
   const fetchOlts = async () => {
     try {
-      const res = await fetch('http://localhost:4000/api/olts');
+      const res = await apiFetch('http://localhost:4000/api/olts');
       if (res.ok) {
         const data = await res.json();
         setOlts(data);
@@ -51,7 +60,7 @@ const DashboardCarga: React.FC = () => {
   const handleDeleteOlt = async (id: number) => {
     if (!confirm('¿Estás seguro de eliminar esta OLT y toda su información asociada?')) return;
     try {
-      const res = await fetch(`http://localhost:4000/api/olts/${id}`, { method: 'DELETE' });
+      const res = await apiFetch(`http://localhost:4000/api/olts/${id}`, { method: 'DELETE' });
       if (res.ok) {
         alert('OLT eliminada correctamente');
         fetchOlts();
@@ -76,7 +85,7 @@ const DashboardCarga: React.FC = () => {
       formData.append('file', selectedFile);
       
       try {
-        const res = await fetch('http://localhost:4000/api/mappings/sheets', {
+        const res = await apiFetch('http://localhost:4000/api/mappings/sheets', {
           method: 'POST',
           body: formData,
         });
@@ -118,7 +127,7 @@ const DashboardCarga: React.FC = () => {
         url.searchParams.append('replace', 'true');
       }
 
-      const res = await fetch(url.toString(), {
+      const res = await apiFetch(url.toString(), {
         method: 'POST',
         body: formData,
       });
@@ -138,7 +147,7 @@ const DashboardCarga: React.FC = () => {
   const handleManualSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await fetch('http://localhost:4000/api/mappings/manual', {
+      const res = await apiFetch('http://localhost:4000/api/mappings/manual', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(manualData),
@@ -313,16 +322,31 @@ const DashboardCarga: React.FC = () => {
       <div className="mt-10 border-t pt-6">
         <h3 className="text-lg font-semibold text-gray-800 mb-4">Carga manual</h3>
         <form onSubmit={handleManualSubmit} className="grid grid-cols-2 gap-4">
-          {['olt', 'slot', 'port', 'odf', 'buffer', 'hilo'].map((field) => (
-            <div key={field}>
-              <label className="block text-sm font-medium text-gray-700 capitalize">
-                {field}
+          {[
+            { key: 'olt', label: 'OLT' },
+            { key: 'slot', label: 'Slot' },
+            { key: 'port', label: 'Puerto (PON)' },
+            { key: 'odf', label: 'O.D.F' },
+            { key: 'buffer', label: 'Buffer' },
+            { key: 'hilo', label: 'Hilo' },
+            { key: 'edfa', label: 'EDFA' },
+            { key: 'edfaPon', label: 'Puerto PON (EDFA)' },
+            { key: 'edfaCom', label: 'Puerto COM (EDFA)' },
+            { key: 'chasis', label: 'Chasis' },
+            { key: 'posicion', label: 'Posición (Splitter)' },
+            { key: 'splitterOutput', label: 'Salida Splitter' },
+            { key: 'entrada', label: 'Entrada' },
+            { key: 'feeder', label: 'Feeder' },
+          ].map((field) => (
+            <div key={field.key}>
+              <label className="block text-sm font-medium text-gray-700">
+                {field.label}
               </label>
               <input
                 type="text"
-                value={manualData[field as keyof typeof manualData]}
+                value={manualData[field.key as keyof typeof manualData]}
                 onChange={(e) =>
-                  setManualData({ ...manualData, [field]: e.target.value })
+                  setManualData({ ...manualData, [field.key]: e.target.value })
                 }
                 className="px-3 py-2 border rounded-md text-gray-700 w-full focus:ring-2 focus:ring-blue-500"
               />

@@ -93,3 +93,11 @@ model Mapping {
   chasis  Chasis? @relation(fields: [chasisId], references: [id])
   divisor Divisor? @relation(fields: [divisorId], references: [id])
 }
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  password  String
+  role      String   @default("admin")
+  createdAt DateTime @default(now())
+}

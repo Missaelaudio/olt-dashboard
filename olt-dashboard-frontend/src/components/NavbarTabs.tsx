@@ -3,11 +3,10 @@ import React from 'react';
 interface NavbarTabsProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
+  tabs: string[];
 }
 
-const tabs = ['Consultar', 'Editar', 'Cargar'];
-
-const NavbarTabs: React.FC<NavbarTabsProps> = ({ activeTab, onTabChange }) => {
+const NavbarTabs: React.FC<NavbarTabsProps> = ({ activeTab, onTabChange, tabs }) => {
   return (
     <header className="bg-white shadow-md">
       <div className="flex justify-between items-center px-4 py-2 border-b border-gray-200">

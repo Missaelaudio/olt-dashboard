@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PortMatrix from '../components/PortMatrix';
 import PortDetailsModal from '../components/PortDetailsModal';
-
+import { apiFetch } from '../utils/api';
 
 interface Olt {
   id: number;
@@ -30,7 +30,7 @@ const DashboardConsulta: React.FC = () => {
 
   // Cargar lista de OLTs al montar
   useEffect(() => {
-    fetch('http://localhost:4000/api/olts')
+    apiFetch('http://localhost:4000/api/olts')
       .then((res) => res.json())
       .then((data) => setOlts(data))
       .catch((err) => console.error('Error cargando OLTs:', err));
@@ -39,7 +39,7 @@ const DashboardConsulta: React.FC = () => {
   const handleConsultar = () => {
     if (!selectedOlt) return;
     setLoading(true);
-    fetch(`http://localhost:4000/api/olts/${selectedOlt}/ports`)
+    apiFetch(`http://localhost:4000/api/olts/${selectedOlt}/ports`)
       .then((res) => res.json())
       .then((data) => {
         setPorts(data);
@@ -97,6 +97,7 @@ const DashboardConsulta: React.FC = () => {
       {selectedPortData && selectedOlt !== null && (
         <PortDetailsModal
           oltId={selectedOlt}
+          oltName={olts.find(o => o.id === selectedOlt)?.name || ''}
           slot={selectedPortData.slot}
           portNumber={selectedPortData.port}
           onClose={() => setSelectedPortData(null)}

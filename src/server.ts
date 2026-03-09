@@ -6,7 +6,7 @@ import oltsRouter from './routes/olts';
 import mappingsRouter from './routes/mappings';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
-
+import authroutes from './routes/auth';
 
 const app = express();
 
@@ -26,6 +26,8 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
+//Autenticación (Debe ir después de express.json() para leer el body)
+app.use(authroutes);
 app.use(oltsRouter);
 app.use(mappingsRouter);
 

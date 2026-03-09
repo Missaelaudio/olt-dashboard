@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { apiFetch } from '../utils/api';
+
 
 interface Olt {
   id: number;
@@ -26,7 +28,7 @@ const DashboardEdicion: React.FC = () => {
 
   // Cargar lista de OLTs
   useEffect(() => {
-    fetch('http://localhost:4000/api/olts')
+    apiFetch('http://localhost:4000/api/olts')
       .then((res) => res.json())
       .then((data) => setOlts(data))
       .catch((err) => console.error('Error cargando OLTs:', err));
@@ -35,7 +37,7 @@ const DashboardEdicion: React.FC = () => {
   // Cargar puertos al seleccionar OLT
   useEffect(() => {
     if (!selectedOlt) return;
-    fetch(`http://localhost:4000/api/olts/${selectedOlt}/ports`)
+    apiFetch(`http://localhost:4000/api/olts/${selectedOlt}/ports`)
       .then((res) => res.json())
       .then((data) => setPorts(data))
       .catch((err) => console.error('Error cargando puertos:', err));
@@ -46,7 +48,7 @@ const DashboardEdicion: React.FC = () => {
     if (!selectedPort) return;
 
     try {
-      const res = await fetch(`http://localhost:4000/api/ports/${selectedPort}`, {
+      const res = await apiFetch(`http://localhost:4000/api/ports/${selectedPort}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status, label }),

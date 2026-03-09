@@ -105,6 +105,139 @@ const parseComplexHilos = (hiloRaw: unknown, defaultBuffers: number[]): ParsedHi
   return results;
 };
 
+// Helper: Lógica centralizada para crear/actualizar un mapeo completo
+const upsertMapping = async (tx: any, data: {
+  oltName: string;
+  slot: number;
+  portNumber: number;
+  edfaName?: string | null;
+  edfaPonPort?: string | number | null;
+  edfaComPort?: string | number | null;
+  chasisName?: string | null;
+  divisorSlot?: number | null;
+  splitterOutput?: string | number | null;
+  entrada?: string | null;
+  odfNumber: number;
+  buffer: number;
+  hilo: string;
+  feeder?: string | null;
+}) => {
+  const {
+    oltName, slot, portNumber,
+    edfaName, edfaPonPort, edfaComPort,
+    chasisName, divisorSlot, splitterOutput, entrada,
+    odfNumber, buffer, hilo, feeder
+  } = data;
+
+  const olt = await tx.olt.upsert({
+    where: { name: oltName },
+    update: {},
+    create: { name: oltName },
+  });
+
+  const port = await tx.port.upsert({
+    where: {
+      oltId_slot_portNumber: {
+        oltId: olt.id,
+        slot,
+        portNumber,
+      },
+    },
+    update: {},
+    create: {
+      oltId: olt.id,
+      slot,
+      portNumber,
+      status: 'available',
+      label: `S${slot}-P${portNumber}`,
+    },
+  });
+
+  const edfa = edfaName
+    ? await tx.edfa.upsert({
+      where: { name: edfaName },
+      update: {},
+      create: { name: edfaName },
+    })
+    : null;
+
+  const chasis = chasisName
+    ? await tx.chasis.upsert({
+      where: { name: chasisName },
+      update: {},
+      create: { name: chasisName },
+    })
+    : null;
+
+  const divisor =
+    chasis && divisorSlot !== null
+      ? await tx.divisor.upsert({
+        where: {
+          chasisId_slot: {
+            chasisId: chasis.id,
+            slot: divisorSlot,
+          },
+        },
+        update: {},
+        create: {
+          chasisId: chasis.id,
+          slot: divisorSlot,
+          type: null,
+        },
+      })
+      : null;
+
+  const odf = await tx.odf.upsert({
+    where: { odfNumber },
+    update: {},
+    create: { odfNumber },
+  });
+
+  const odfPort = await tx.odfPort.upsert({
+    where: {
+      odfId_buffer_color: {
+        odfId: odf.id,
+        buffer: buffer,
+        color: hilo,
+      },
+    },
+    update: {},
+    create: {
+      odfId: odf.id,
+      buffer: buffer,
+      color: hilo,
+    },
+  });
+
+  await tx.mapping.create({
+    data: {
+      oltId: olt.id,
+      portId: port.id,
+      odfPortId: odfPort.id,
+      edfaId: edfa?.id ?? null,
+      chasisId: chasis?.id ?? null,
+      divisorId: divisor?.id ?? null,
+      edfaComPort: edfaComPort ? String(edfaComPort) : null,
+      edfaPonPort: edfaPonPort ? String(edfaPonPort) : null,
+      splitterOutput: splitterOutput ? String(splitterOutput) : null,
+      entrada: entrada || null,
+      feeder: feeder || null,
+    },
+  });
+};
+
+// Endpoint para listar OLTs (Centralizado aquí para el Dashboard)
+router.get('/api/olts', async (_req, res) => {
+  try {
+    const olts = await prisma.olt.findMany({
+      orderBy: { id: 'asc' },
+    });
+    res.json(olts);
+  } catch (err) {
+    res.status(500).json({ message: 'Error obteniendo OLTs' });
+  }
+});
+
 router.post('/api/mappings/sheets', upload.single('file'), async (req, res) => {
   const file = req.file;
   if (!file) return res.status(400).json({ message: 'No se recibió archivo' });
@@ -352,38 +485,22 @@ router.post('/api/mappings/upload', upload.single('file'), async (req, res) => {
 
           // Iteramos sobre cada hilo/buffer parseado para crear múltiples mappings si es necesario
           for (const item of parsedHilos) {
-            const odfPort = await tx.odfPort.upsert({
-              where: {
-                odfId_buffer_color: {
-                  odfId: odf.id,
-                  buffer: item.buffer,
-                  color: item.hilo,
-                },
-              },
-              update: {},
-              create: {
-                odfId: odf.id,
-                buffer: item.buffer,
-                color: item.hilo,
-              },
+            await upsertMapping(tx, {
+              oltName,
+              slot,
+              portNumber: pon,
+              edfaName,
+              edfaPonPort,
+              edfaComPort,
+              chasisName,
+              divisorSlot,
+              splitterOutput,
+              entrada,
+              odfNumber,
+              buffer: item.buffer,
+              hilo: item.hilo,
+              feeder
             });
-
-            await tx.mapping.create({
-              data: {
-                oltId: olt.id,
-                portId: port.id,
-                odfPortId: odfPort.id,
-                edfaId: edfa?.id ?? null,
-                chasisId: chasis?.id ?? null,
-                divisorId: divisor?.id ?? null,
-                edfaComPort: edfaComPort || null,
-                edfaPonPort: edfaPonPort || null,
-                splitterOutput: splitterOutput || null,
-                entrada: entrada || null,
-                feeder: feeder || null,
-              },
-            });
-
             insertedMappings += 1;
           }
       }
@@ -408,6 +525,57 @@ router.post('/api/mappings/upload', upload.single('file'), async (req, res) => {
         console.error('Error eliminando archivo temporal:', e);
       }
     }
+  }
+});
+
+// Endpoint para Carga Manual
+router.post('/api/mappings/manual', async (req, res) => {
+  try {
+    const {
+      olt: oltName, slot: slotStr, port: portStr,
+      odf: odfStr, buffer: bufferStr, hilo: hiloStr,
+      edfa: edfaName, edfaPon: edfaPonPort, edfaCom: edfaComPort,
+      chasis: chasisName, posicion: divisorSlotStr, splitterOutput, entrada, feeder
+    } = req.body;
+
+    // Validaciones básicas
+    if (!oltName || !slotStr || !portStr || !odfStr || !bufferStr || !hiloStr) {
+      return res.status(400).json({ message: 'Todos los campos son requeridos' });
+    }
+
+    const slot = parseInt(slotStr, 10);
+    const portNumber = parseInt(portStr, 10);
+    const odfNumber = parseInt(odfStr, 10);
+    const buffer = parseInt(bufferStr, 10);
+    const divisorSlot = divisorSlotStr ? parseInt(divisorSlotStr, 10) : null;
+
+    if (isNaN(slot) || isNaN(portNumber) || isNaN(odfNumber) || isNaN(buffer)) {
+      return res.status(400).json({ message: 'Slot, Puerto, ODF y Buffer deben ser números válidos' });
+    }
+
+    await prisma.$transaction(async (tx) => {
+      await upsertMapping(tx, {
+        oltName,
+        slot,
+        portNumber,
+        edfaName,
+        edfaPonPort,
+        edfaComPort,
+        chasisName,
+        divisorSlot,
+        splitterOutput,
+        entrada,
+        odfNumber,
+        buffer,
+        hilo: hiloStr,
+        feeder
+      });
+    });
+
+    res.json({ message: 'Registro manual creado correctamente' });
+  } catch (err) {
+    console.error('Error en carga manual:', err);
+    res.status(500).json({ message: 'Error al guardar el registro manual', error: String(err) });
   }
 });
 
@@ -452,6 +620,8 @@ router.get('/api/mappings/details', async (req, res) => {
       ponPort: mapping.edfaPonPort || '-',
       chasis: mapping.chasis?.name || '-',
       position: mapping.divisor?.slot?.toString() || '-',
+      splitterOutput: mapping.splitterOutput || '-',
+      entrada: mapping.entrada || '-',
       odf: mapping.odfPort?.odf?.odfNumber?.toString() || '-',
       buffer: mapping.odfPort?.buffer?.toString() || '-',
       hilo: mapping.odfPort?.color || '-',

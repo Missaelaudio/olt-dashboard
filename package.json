@@ -1,0 +1,57 @@
+{
+  "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/body-parser": "^1.19.6",
+    "@types/cors": "^2.8.19",
+    "@types/dotenv": "^8.2.3",
+    "@types/express": "^5.0.5",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/multer": "^2.0.0",
+    "@types/node": "^24.10.4",
+    "@types/supertest": "^6.0.3",
+    "concurrently": "^9.2.1",
+    "nodemon": "^3.1.11",
+    "prisma": "6.2.1",
+    "rimraf": "^6.1.3",
+    "supertest": "^7.1.4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.14"
+  },
+  "dependencies": {
+    "@prisma/client": "6.2.1",
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.2.1",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^2.0.2",
+    "xlsx": "^0.18.5",
+    "zod": "^4.3.6"
+  },
+  "scripts": {
+    "dev:backend": "nodemon --watch src --exec ts-node src/index.ts",
+    "dev:frontend": "cd olt-dashboard-frontend && pnpm dev",
+    "clean:src": "del-cli \"src/**/*.js\" \"src/**/*.js.map\"",
+    "dev": "pnpm clean:src && concurrently \"pnpm dev:backend\" \"pnpm dev:frontend\"",
+    "clean": "rimraf dist",
+    "build:frontend": "cd olt-dashboard-frontend && pnpm build",
+    "build:backend": "pnpm clean && tsc",
+    "build": "pnpm build:backend && pnpm build:frontend",
+    "start": "node dist/index.js",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:seed": "prisma db seed",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "prisma": {
+    "engines": {
+      "queryEngine": "js",
+      "migrationEngine": "js"
+    },
+    "seed": "ts-node prisma/seed.ts"
+  }
+}

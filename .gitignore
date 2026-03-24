@@ -1,18 +1,27 @@
 # Dependencias
-node_modules
+node_modules/
+dist/
+olt-dashboard-frontend/dist/
 
 # Variables de entorno
 .env
-.env.*
-!.env.example
+.env.production
+olt-dashboard-frontend/.env.production
 
 # Compilación
 dist/
 build/
 *.tsbuildinfo
 
-# Frontend build (Vite)
-olt-dashboard-frontend/dist/
+# Archivos pesados o temporales
+uploads/
+*.xlsx
+*.sql
+respaldos/
+*.zip
+
+# Prisma binarios
+src/generated/
 
 # Logs
 *.log

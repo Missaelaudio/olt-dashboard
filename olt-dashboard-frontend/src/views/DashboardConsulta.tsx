@@ -30,7 +30,7 @@ const DashboardConsulta: React.FC = () => {
 
   // Cargar lista de OLTs al montar
   useEffect(() => {
-    apiFetch('http://localhost:4000/api/olts')
+    apiFetch('/api/olts')
       .then((res) => res.json())
       .then((data) => setOlts(data))
       .catch((err) => console.error('Error cargando OLTs:', err));
@@ -39,7 +39,7 @@ const DashboardConsulta: React.FC = () => {
   const handleConsultar = () => {
     if (!selectedOlt) return;
     setLoading(true);
-    apiFetch(`http://localhost:4000/api/olts/${selectedOlt}/ports`)
+    apiFetch(`/api/olts/${selectedOlt}/ports`)
       .then((res) => res.json())
       .then((data) => {
         setPorts(data);

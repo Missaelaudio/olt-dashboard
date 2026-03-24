@@ -43,7 +43,7 @@ const DashboardCarga: React.FC = () => {
 
   const fetchOlts = async () => {
     try {
-      const res = await apiFetch('http://localhost:4000/api/olts');
+      const res = await apiFetch('/api/olts');
       if (res.ok) {
         const data = await res.json();
         setOlts(data);
@@ -60,7 +60,7 @@ const DashboardCarga: React.FC = () => {
   const handleDeleteOlt = async (id: number) => {
     if (!confirm('¿Estás seguro de eliminar esta OLT y toda su información asociada?')) return;
     try {
-      const res = await apiFetch(`http://localhost:4000/api/olts/${id}`, { method: 'DELETE' });
+      const res = await apiFetch(`/api/olts/${id}`, { method: 'DELETE' });
       if (res.ok) {
         alert('OLT eliminada correctamente');
         fetchOlts();
@@ -85,7 +85,7 @@ const DashboardCarga: React.FC = () => {
       formData.append('file', selectedFile);
       
       try {
-        const res = await apiFetch('http://localhost:4000/api/mappings/sheets', {
+        const res = await apiFetch('/api/mappings/sheets', {
           method: 'POST',
           body: formData,
         });
@@ -122,7 +122,7 @@ const DashboardCarga: React.FC = () => {
     setResult(null);
 
     try {
-      const url = new URL('http://localhost:4000/api/mappings/upload');
+      const url = new URL('/api/mappings/upload', window.location.origin);
       if (replaceData) {
         url.searchParams.append('replace', 'true');
       }
@@ -147,7 +147,7 @@ const DashboardCarga: React.FC = () => {
   const handleManualSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await apiFetch('http://localhost:4000/api/mappings/manual', {
+      const res = await apiFetch('/api/mappings/manual', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(manualData),

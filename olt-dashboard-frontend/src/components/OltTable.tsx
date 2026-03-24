@@ -25,7 +25,7 @@ export default function OltTable() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:4000/api/olts')
+    fetch('/api/olts')
       .then((res) => res.json())
       .then((data) => {
         setOlts(data);

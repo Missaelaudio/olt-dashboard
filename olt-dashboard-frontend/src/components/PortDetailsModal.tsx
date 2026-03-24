@@ -61,7 +61,7 @@ const PortDetailsModal: React.FC<PortDetailsModalProps> = ({ oltId, oltName, slo
       try {
         setLoading(true);
         // Nota: Asegúrate de que este endpoint exista en tu backend (routes/mappings.ts)
-        const response = await apiFetch(`http://localhost:4000/api/mappings/details?oltId=${oltId}&slot=${slot}&port=${portNumber}`);
+        const response = await apiFetch(`/api/mappings/details?oltId=${oltId}&slot=${slot}&port=${portNumber}`);
         
         if (!response.ok) {
           throw new Error('No se pudo obtener la información del puerto');
@@ -111,7 +111,7 @@ const PortDetailsModal: React.FC<PortDetailsModalProps> = ({ oltId, oltName, slo
   const handleSave = async () => {
     try {
       setSaving(true);
-      const response = await apiFetch('http://localhost:4000/api/mappings/manual', {
+      const response = await apiFetch('/api/mappings/manual', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(editFormData),
@@ -123,7 +123,7 @@ const PortDetailsModal: React.FC<PortDetailsModalProps> = ({ oltId, oltName, slo
       }
 
       // Recargar datos
-      const refreshRes = await apiFetch(`http://localhost:4000/api/mappings/details?oltId=${oltId}&slot=${slot}&port=${portNumber}`);
+      const refreshRes = await apiFetch(`/api/mappings/details?oltId=${oltId}&slot=${slot}&port=${portNumber}`);
       if (refreshRes.ok) {
         const result = await refreshRes.json();
         setData(result);

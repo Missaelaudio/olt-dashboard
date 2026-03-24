@@ -18,7 +18,7 @@ export default function PortMatrix({ oltId, onPortClick }: PortMatrixProps) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`http://localhost:4000/api/olts/${oltId}/ports`)
+    fetch(`/api/olts/${oltId}/ports`)
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {

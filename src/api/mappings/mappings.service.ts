@@ -12,7 +12,7 @@ export const ManualMappingSchema = z.object({
   olt: z.string().min(1, "El nombre de la OLT es requerido"),
   slot: z.coerce.number().int().min(1).max(18).refine(n => n !== 9 && n !== 10, "Los slots 9 y 10 están reservados"),
   port: z.coerce.number().int().min(1).max(16, "El puerto debe estar entre 1 y 16"),
-  odf: z.coerce.number().int().min(1, "El número de ODF es requerido"),
+  odf: z.union([z.string(), z.number()]).transform((val) => String(val).trim()).refine(val => val.length > 0, "El número de ODF es requerido"),
   buffer: z.coerce.number().int().min(1, "El buffer es requerido"),
   hilo: z.string().min(1, "El hilo (color) es requerido"),
   edfa: z.string().optional().nullable(),
@@ -36,7 +36,7 @@ interface UpsertMappingData {
   divisorSlot?: number | null;
   splitterOutput?: string | number | null;
   entrada?: string | null;
-  odfNumber: number;
+  odfNumber: string;
   buffer: number;
   hilo: string;
   feeder?: string | null;
@@ -204,7 +204,7 @@ export const processBulkUpload = async (filePath: string, sheetName: string, rep
         let oltName = (rawOlt ?? '').toString().trim() || selectedSheet.trim();
         const slot = toInt(rawSlot);
         const pon = toInt(rawPon);
-        const odfNumber = toInt(rawOdf);
+        const odfNumber = rawOdf ? String(rawOdf).trim() : null;
         const buffers = parseNumbers(rawBuffer);
         const parsedHilos = parseComplexHilos(rawHilo, buffers);
 
@@ -220,7 +220,7 @@ export const processBulkUpload = async (filePath: string, sheetName: string, rep
         if (!oltName) { if (rawOlt !== undefined) addError('OLT', rawOlt, 'Texto no vacío'); continue; }
         if (slot === null) { if (rawSlot !== undefined) addError('SLOT', rawSlot, 'Número entero'); continue; }
         if (pon === null) { if (rawPon !== undefined) addError('PON', rawPon, 'Número entero'); continue; }
-        if (odfNumber === null) { if (rawOdf !== undefined) addError('O.D.F', rawOdf, 'Número entero'); continue; }
+        if (!odfNumber) { if (rawOdf !== undefined) addError('O.D.F', rawOdf, 'Texto no vacío'); continue; }
         if (buffers.length === 0) { if (rawBuffer !== undefined) addError('BUFFER', rawBuffer, 'Número(s) entero(s)'); continue; }
         if (parsedHilos.length === 0) { if (rawHilo !== undefined) addError('HILO (S)', rawHilo, 'Texto no vacío'); continue; }
 

@@ -1,3 +1,5 @@
+const BASE_URL = (import.meta as any).env.VITE_API_URL || '';
+
 // src/utils/api.ts
 export const apiFetch = async (url: string, options: RequestInit = {}) => {
   const token = localStorage.getItem('token');
